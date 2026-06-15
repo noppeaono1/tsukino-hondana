@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月の本棚 - Short Fiction Archive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Noto+Sans+JP:wght@300;400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1410;
+    --paper: #f7f3ed;
+    --accent: #8b1a2f;
+    --muted: #9e9589;
+    --border: #d8d0c4;
+    --card-bg: #fff;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  header {
+    border-bottom: 2px solid var(--ink);
+    padding: 2rem 2rem 1.2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    z-index: 100;
+    flex-wrap: wrap;
+  }
+
+  .site-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .site-subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  nav {
+    margin-left: auto;
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  nav a {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav a:hover, nav a.active { color: var(--accent); }
+
+  .hero {
+    padding: 4rem 2rem 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(2.2rem, 6vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.3;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .hero-desc {
+    font-size: 0.95rem;
+    color: var(--muted);
+    max-width: 520px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── セクション切り替えUI ── */
+  .section-switch {
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+    padding: 0 2rem;
+    display: flex;
+    gap: 1rem;
+  }
+
+  .switch-card {
+    flex: 1;
+    display: block;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    background: var(--card-bg);
+    transition: transform 0.2s, box-shadow 0.2s;
+    color: var(--ink);
+  }
+
+  .switch-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+
+  .switch-card.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .switch-card .icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .switch-card .label {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .switch-card .count {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    margin-top: 0.3rem;
+    opacity: 0.7;
+  }
+
+  .switch-card.active .count { color: var(--paper); }
+  .switch-card:not(.active) .count { color: var(--muted); }
+
+  .ad-slot {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .ad-slot .ad-box {
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-align: center;
+    padding: 0.8rem;
+    text-transform: uppercase;
+    background: repeating-linear-gradient(45deg, rgba(0,0,0,0.015) 0 10px, transparent 10px 20px);
+  }
+
+  .filter-bar {
+    padding: 1.5rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  .tag-btn {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.9rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    color: var(--muted);
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .tag-btn:hover, .tag-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .novels-grid {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .novel-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 1.8rem 1.6rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+
+  .novel-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--accent);
+    transition: height 0.3s;
+  }
+
+  .novel-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+  }
+
+  .novel-card:hover::before { height: 100%; }
+
+  .novel-genre {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .novel-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
+    letter-spacing: 0.05em;
+  }
+
+  .novel-excerpt {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .novel-meta {
+    margin-top: 1.2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,20,16,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--paper);
+    max-width: 680px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 3rem;
+    position: relative;
+    border-top: 4px solid var(--accent);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1.2rem; right: 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+
+  .modal-genre {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    letter-spacing: 0.05em;
+  }
+
+  .modal-date {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-body {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.95rem;
+    line-height: 2.2;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+  }
+
+  .modal-body p { margin-bottom: 1.4em; }
+
+  .modal-ad {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .cta-box {
+    margin-top: 2rem;
+    padding: 1.4rem;
+    border: 1px solid var(--border);
+    background: #fdfbf8;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+
+  .cta-box a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent);
+  }
+
+  footer {
+    margin-top: 4rem;
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="site-title">月の本棚</a>
+  <div class="site-subtitle">Short Fiction Archive</div>
+  <nav>
+    <a href="#">about</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <p class="hero-eyebrow">Short Fiction Archive</p>
+  <h1>言葉で作った、<br><em>もうひとつの世界</em>。</h1>
+  <p class="hero-desc">AIと一緒に綴った、静かに読める短編のアーカイブ。5分くらいで読み終わる物語を集めました。</p>
+</section>
+
+<div class="section-switch">
+  <a href="index.html" class="switch-card active">
+    <div class="icon">📖</div>
+    <div class="label">短編・読みもの</div>
+    <div class="count">6作品</div>
+  </a>
+  <a href="series.html" class="switch-card">
+    <div class="icon">📚</div>
+    <div class="label">連載小説</div>
+    <div class="count">4作品</div>
+  </a>
+</div>
+
+<div class="ad-slot"><div class="ad-box">広告スペース（728×90）</div></div>
+
+<div class="filter-bar">
+  <button class="tag-btn active" onclick="filterNovels('all', this)">すべて</button>
+  <button class="tag-btn" onclick="filterNovels('short', this)">短編</button>
+  <button class="tag-btn" onclick="filterNovels('cry', this)">泣ける</button>
+  <button class="tag-btn" onclick="filterNovels('fantasy', this)">ファンタジー</button>
+</div>
+
+<div class="novels-grid" id="grid"></div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-genre" id="m-genre"></div>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-date" id="m-date"></div>
+    <div class="modal-body" id="m-body"></div>
+    <div class="modal-ad">
+      <div class="ad-box">広告スペース（記事内インアーティクル広告）</div>
+      <div class="cta-box">
+        この物語の続きが気になった方へ ―― <a href="#">AIクリエイターズ 公式note</a> では、有料版の続編や制作の裏側を公開しています。
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>© AIクリエイターズ · 月の本棚</footer>
+
+<script>
+const novels = [
+  {
+    "id": 1,
+    "genre": "short",
+    "genreLabel": "短編",
+    "title": "最後の席",
+    "date": "2026年6月10日",
+    "excerpt": "三年間、毎晩。誰もいない向かいの席にコーヒーを置く老人。閉店を迎える喫茶店で、その理由がそっと明かされる――静かな夜の物語。",
+    "body": "<p>閉店時間まで、あと三十分。</p><p>喫茶「ひらり」の窓には、まだ「OPEN」の札がかかっている。けれど夜の九時を過ぎたこの時間、入ってくる客はもういない。常連たちはもう知っている。この店は、もうすぐなくなる。</p><p>来週の日曜が最後の営業日だと、店主の長谷川は先週、貼り紙でそれを伝えた。「四十二年間、ありがとうございました」。それだけ書いた紙が、レジの横にずっと貼られている。</p><p>カランと音がして、ドアが開いた。</p><p>「いらっしゃいませ」</p><p>長谷川が顔を上げる前に、もう誰だかわかっていた。毎晩、この時間にやってくる。八十は過ぎているだろう。いつも同じ茶色のコートを着て、いつも同じ席――窓際の、二人席に座る。</p><p>老人は静かに腰を下ろした。</p><p>「ブレンドを一つ。それと、いつものを」</p><p>「かしこまりました」</p><p>長谷川はカウンターに戻り、コーヒーを二つ用意した。一つは老人の前に。もう一つは――向かいの、誰も座っていない椅子の前に、そっと置く。</p><p>この席に、もう一人分のコーヒーを置く。それが、この老人が三年前からずっと続けている注文だった。</p><p>最初の頃、長谷川は理由を聞いた。「お連れ様は、いらっしゃいますか」と。老人は少し笑って、「いや、これでいいんだ」とだけ言った。それ以来、長谷川は何も聞かなかった。三年間、毎晩。雨の日も、雪の日も。向かいの椅子には誰も座らず、コーヒーだけが置かれ、湯気が静かに消えていく。</p><p>「もうすぐ、閉めるんだね」と老人が言った。</p><p>「ええ」</p><p>「四十二年か。長いね」</p><p>「父の代からですから」</p><p>老人はコーヒーを一口飲んだ。窓の外を、夜の通りを眺めている。</p><p>「この席、もう来週で最後になる」</p><p>「そうですね」</p><p>老人は少し黙って、それから向かいの椅子を見た。誰もいない椅子に置かれた、まだ手をつけられていないコーヒー。湯気が、ゆっくりと立ち上っている。</p><p>「マスター。一つ、聞いてもいいかい」</p><p>「はい」</p><p>「この三年、毎晩、向かいにコーヒーを置いてもらってたけど――」</p><p>長谷川は黙って、老人の言葉を待った。何年も聞かなかった理由が、ようやく語られるのだと思った。亡くなった奥さんのことだろうか。それとも、もっと別の誰かのことか。</p><p>「不思議に思ってたでしょう」</p><p>「少しは」</p><p>老人は小さく笑った。それから、ゆっくりと言った。</p><p>「これは、あの頃の俺に飲ませてるんだ」</p><p>「あの頃の――」</p><p>「ここに、よく座ってた。四十年くらい前かな。若い頃、仕事に失敗してね。何もかも嫌になって、毎晩ここに来て、一人でコーヒーを飲んでた。誰かと話したかったけど、誰も来なかった」</p><p>長谷川は黙って聞いていた。</p><p>「だから今は、こうしてるんだ。あの頃の自分が、ここに座ってるつもりで。一緒にコーヒーを飲んでやろうと思って」</p><p>老人は向かいの椅子を見て、静かに続けた。</p><p>「もう一人じゃないぞ、って。そう言ってやりたくて」</p><p>長谷川は何も言わなかった。ただ、窓の外の通りを、老人と同じように眺めた。雨が降り始めていた。</p><p>老人はコーヒーを飲み終えると、向かいの椅子に置かれたコーヒーカップを、両手でそっと持ち上げた。一度も口をつけられていないそのカップを、まるで誰かに手渡すように、自分の前に置き直した。</p><p>「これは、持って帰るよ。最後だから」</p><p>長谷川は頷いた。「お気をつけて」</p><p>老人は立ち上がり、コートを着た。ドアの前で一度だけ振り返り、店内を――四十二年間あったこの場所を、ゆっくりと見渡した。</p><p>「ありがとう」</p><p>その一言だけを残して、老人は雨の中へ出て行った。</p><p>ドアが閉まると、店には長谷川一人になった。向かいの椅子に置かれていたコーヒーカップは、今、老人の手の中にある。あの椅子は、もう空っぽだ。</p><p>長谷川はカウンターに戻り、明日もう一度だけ、店を開ける準備を始めた。最後の一週間。最後まで、誰かのための席を、用意しておこうと思った。</p>",
+    "series": false
+  },
+  {
+    "id": 2,
+    "genre": "short",
+    "genreLabel": "短編",
+    "title": "一番奥の鉛筆",
+    "date": "2026年6月10日",
+    "excerpt": "三十年間、棚の一番奥で売れ残った一本の鉛筆。文房具屋の最後の日、ある女の子がその鉛筆を選んだ理由は。",
+    "body": "<p>俺は、棚の一番奥にいる。</p><p>左から三段目、一番奥の列。前にも後ろにも仲間がいて、見えるのは天井の蛍光灯だけだ。あの蛍光灯は、もう何年も前から、ジジ、と小さく音を立てて点滅している。</p><p>俺は六角形の、黄色い鉛筆だ。HBの芯が一本入っている。値段は、五十円。</p><p>この店に並んでから、もう三十年になる。たぶん、そのくらいだと思う。数えるのをやめたのは、二十年目くらいだった。</p><p>店主は、何度か変わった。最初は眼鏡をかけたおじいさんで、いつも俺たちの棚を雑巾で拭いてくれた。次は、その息子。今は、孫の番だ。名前は知らない。たぶん、まだ三十歳くらい。いつもパソコンの画面を見ている。</p><p>文房具屋は、もう儲からないらしい。前にそんな話をしているのを聞いた。</p><p>「来月で、店じまいします」</p><p>今日、若い店主がそう言うのを聞いた。お客さんに向かって。少し申し訳なさそうな声だった。</p><p>俺たちの棚は、もう何年も動いていない。新しい商品は入ってこない。隣にいた赤鉛筆は、五年前に売れていった。前の列にいた消しゴムは、十年前。俺の周りには、ずっと古い仲間ばかりが残っている。</p><p>売れ残るというのは、悪いことなんだろうか。俺はよくそれを考える。誰にも選ばれないまま、ここにいる。それは、何か間違っていたということなんだろうか。</p><p>でも、悪いことばかりでもなかった。</p><p>毎朝、店主がシャッターを開けるときの音。雨の日に客が傘を畳む音。レジの「チーン」という音。季節が変わるたびに、店の前を通る人の服が変わっていくのが、ガラス越しに見えた。</p><p>三十年分の、いろんな音や光を、俺はここでずっと見てきた。</p><p>来月で、それも終わる。</p><p>最後の週になった。店主は棚を整理し始めた。売れ残った商品を、段ボール箱に詰めていく。俺たちも、いずれその箱に入るのだろう。</p><p>ある日、ドアの鈴が鳴った。</p><p>「こんにちは」</p><p>小さな女の子だった。母親と一緒に入ってきた。</p><p>「最後のお買い物だね」と母親が言った。「何か、好きなもの選んでいいよ」</p><p>女の子は店の中を歩き回った。新しい消しゴム、可愛いノート、いろんな商品が並んでいる。女の子はそれらを一つずつ見て、でも、なかなか決めない。</p><p>そして、俺たちの棚の前で、足を止めた。</p><p>女の子は背伸びをして、一番奥の列を覗き込んだ。蛍光灯の光の中で、俺の黄色い色が見えたのかもしれない。</p><p>「これがいい」</p><p>女の子は、俺を指さした。</p><p>「こんな古いのでいいの？もっと新しいのもあるよ」と母親が言った。</p><p>「これがいい」と女の子はもう一度言った。「一番奥にいたから」</p><p>店主が棚から俺を取り出した。三十年ぶりに、誰かの手が俺に触れた。少し驚いているような顔をしていた。</p><p>「五十円です」</p><p>女の子はポケットから、お小遣いを出した。</p><p>俺は、初めて店の外に出た。三十年間、ガラス越しに見ていた光を、今、直接受けている。</p><p>女の子は俺を、新しい鉛筆ケースにしまった。中には、もう何本か鉛筆が入っている。みんな新しくて、綺麗な色をしている。その中に、俺も並んだ。</p><p>売れ残ることは、悪いことじゃなかったのかもしれない。</p><p>ただ、誰かが見つけてくれるまでの時間が、少し長かっただけだ。</p>",
+    "series": false
+  },
+  {
+    "id": 3,
+    "genre": "cry",
+    "genreLabel": "泣ける",
+    "title": "光の名前",
+    "date": "2026年6月12日",
+    "excerpt": "認知症が進んだ祖母が、なぜか毎週同じ話だけを繰り返す。二十歳の頃、公園で出会った名も知らぬ誰かのこと――その記憶の先に、自分の名前の意味が見えてくる。",
+    "body": "<p>毎週日曜、私は祖母の部屋を訪ねる。</p><p>施設の三階、角の部屋。窓からは桜の木が見える。今はもう緑だけど、春になれば満開になる。祖母はその桜が好きだったらしい。「らしい」というのは、もう祖母自身がそれを覚えていないからだ。</p><p>「こんにちは、おばあちゃん」</p><p>祖母は車椅子に座って、窓の外を見ていた。私が部屋に入っても、振り向かない。</p><p>「today wa、いい天気ね」</p><p>祖母は時々、こんな風に言葉が混ざる。認知症が進んでから、もう三年になる。最初は私の名前を忘れた。次に、母の名前を忘れた。今は、自分の娘である母のことも、「親切な人」としか認識できないことが多い。</p><p>でも、不思議なことがある。</p><p>祖母は、ある話だけを、ずっと覚えている。</p><p>「あなた、聞いたことある？私が二十歳の頃のこと」</p><p>毎週、必ず一度はこの話が始まる。私は何度も聞いた話だけど、いつも初めて聞くように頷く。</p><p>「二十歳の頃、私は田舎から東京に出てきてね。何もできなかった。お金もなかったし、友達もいなかった」</p><p>祖母の目が、少し違う光を持つ。今だけは、ここではない場所を見ている。</p><p>「ある日、公園のベンチで泣いていたの。理由は今でも覚えてない。とにかく、悲しかった。そしたら、知らない女の子が来てね。私と同じくらいの年の子。何も聞かずに、隣に座ってくれたの」</p><p>「その子、何て言ったの？」と私は聞く。毎週、同じ質問をする。</p><p>「何も言わなかった。ただ、隣にずっといてくれた。一時間くらい。それで、帰り際に一言だけ」</p><p>「なんて？」</p><p>「『また会えたらいいね』って。それだけ」</p><p>祖母は微笑む。三年間、何も新しいことを覚えられない祖母が、この話だけは、毎週、同じように、同じ表情で話す。</p><p>「その子の名前、知らないままだったの。でも、ずっと考えてた。あの子に、何かお礼がしたいって。会えたら、お礼を言いたいって」</p><p>「会えたの？」</p><p>「ううん。一度も」</p><p>祖母はいつも、ここで少し寂しそうな顔をする。</p><p>「でも、ずっと覚えてる。あの子のおかげで、私は東京で頑張れた。一人じゃないって、思えたから」</p><p>今日も、いつもと同じだった。私は祖母の手を握って、「また来るね」と言って部屋を出た。</p><p>帰り道、母に電話した。母はいつも、祖母の様子を聞いてくる。</p><p>「おばあちゃん、今日もあの話してたよ。二十歳の時の、公園の話」</p><p>「ああ、その話」と母は少し笑った。「もう何百回も聞いたね」</p><p>「ね。本当に毎週同じ」</p><p>電話の向こうで、母が少し黙った。</p><p>「あの話、知ってる？」</p><p>「うん。知らない女の子が隣に座ってくれたって話でしょ」</p><p>「そうそう。それでね」と母は言った。「その話、お母さんが小さい頃、おばあちゃんに『私の名前はどうして\"陽菜\"なの?』って聞いたことがあるの」</p><p>「うん」</p><p>「そしたら、おばあちゃん、その公園の話をしてくれてね。あの女の子の名前、知らなかったけど、その日、公園に陽が当たってて、すごく綺麗だったんだって。だから——」</p><p>「陽菜」</p><p>私は思わず、足を止めた。</p><p>「お母さんの名前、その日の光から来てるんだって。おばあちゃんがそう言ってた」</p><p>私はしばらく、何も言えなかった。</p><p>「ねえ、それってつまり」と私は言った。「私の名前も——」</p><p>私の名前は、「陽子」。母が私につけてくれた。</p><p>「うん」と母は言った。「お母さんも、同じ気持ちでつけたんだと思う」</p><p>電話を切った後、私はもう一度、施設の建物を見上げた。三階の角の部屋。窓の向こうに、祖母の後ろ姿が見えた気がした。</p><p>祖母は、もう私の名前を覚えていない。母の名前も、自分の名前さえも、時々わからなくなる。</p><p>でも、あの日――まだ二十歳だった祖母の隣に座った、名前も知らない誰かのことは、覚えている。</p><p>その記憶だけが、形を変えて、母の名前になり、私の名前になり、ずっと続いている。</p><p>祖母が忘れていくものの中で、たった一つだけ、ずっと残り続けているもの。それは、誰かにもらった、小さな優しさだった。</p><p>そして今、その優しさは、私の名前として、ここにある。</p>",
+    "series": false
+  },
+  {
+    "id": 4,
+    "genre": "cry",
+    "genreLabel": "泣ける",
+    "title": "コタロウの七年",
+    "date": "2026年6月12日",
+    "excerpt": "保護施設で七年、誰にも選ばれなかった老犬コタロウ。ある日、年老いた男性が彼を選んだ理由は、誰も予想していないものだった。",
+    "body": "<p>俺がこの施設に来たのは、もう七年前のことだ。</p><p>当時、俺は二歳だった。今は九歳になる。犬の年齢でいうと、もう「老犬」と呼ばれる歳らしい。</p><p>ここは保護施設。捨てられたり、飼い主が病気になったり、いろんな事情で来た犬や猫が、新しい家族を待つ場所だ。</p><p>俺の名前は「コタロウ」。職員さんがつけてくれた。最初に来た時の俺は、ガリガリに痩せていて、人を見るとすぐに隠れた。それから少しずつ、職員さんに慣れていった。</p><p>七年間、いろんな犬が来て、いろんな犬が出て行った。</p><p>子犬は、すぐに決まる。見学に来た家族が、ガラスの向こうから子犬を見て、目を輝かせる。「この子がいい」。子犬は尻尾を振って、新しい家族と一緒に出て行く。</p><p>俺は、いつもそれを見送る側だった。</p><p>最初の頃は、俺も見学スペースに出された。でも、誰も俺を選ばなかった。「もう歳だから」「これからお世話が大変になるかもしれないから」。子供たちは、もっと小さくて可愛い犬を見たがった。</p><p>二年目くらいから、俺はもう見学スペースに出されなくなった。職員さんが「コタロウはもう、ここで暮らすことになると思う」と話しているのを聞いた。</p><p>それでも、俺は不幸じゃなかった。職員さんは優しかったし、毎日ご飯ももらえた。庭で日向ぼっこもできる。新しい犬が来ると、俺はいつも、その犬のそばにいた。怖がっている犬の隣に、黙って座る。それだけで、少し落ち着く犬もいた。</p><p>子犬たちが新しい家族と出て行くのを、俺はいつも庭の隅から見ていた。みんな、嬉しそうだった。それを見るのは、俺も嬉しかった。</p><p>ある日、見学に来た人がいた。</p><p>年配の男性だった。一人で、ゆっくりと施設の中を歩いていた。子犬たちのケージの前で、少し足を止めたけど、すぐに通り過ぎた。</p><p>その人は、俺のところまで来た。俺は庭にいた。男性は、ガラスの外から、しばらく俺を見ていた。</p><p>「この子は?」と男性が職員さんに聞いた。</p><p>「コタロウです。九歳の、雑種の男の子です」</p><p>「九歳か」</p><p>男性は少し考えて、それから言った。</p><p>「この子に、決めようかな」</p><p>職員さんは、少し驚いた顔をした。</p><p>「コタロウは、もう歳ですので、これから病気になったり、お世話が大変になることもあるかもしれません」</p><p>「うん、知ってる」と男性は言った。「俺も、もう七十だからね」</p><p>男性は、ガラスの向こうの俺を見て、続けた。</p><p>「子犬を選んだら、俺が先に逝くかもしれない。そしたら、その子はまた一人になる」</p><p>男性は静かに笑った。</p><p>「でも、この子なら。俺と同じくらいの時間を、一緒に過ごせるんじゃないかな、って」</p><p>職員さんは、何も言わなかった。</p><p>男性は、ガラスに手を当てた。俺は、その手のひらを見ていた。</p><p>「コタロウ。これから、よろしくな」</p><p>俺は、ゆっくりとガラスに近づいた。男性の手のひらに、鼻を近づけた。</p><p>七年間、誰にも選ばれなかった。それでいいと思っていた。ここで、誰かの役に立てるなら、それで十分だと。</p><p>でも、今、誰かが俺を選んでくれた。</p><p>俺と同じくらいの時間を、一緒に歩いてくれる人が。</p><p>俺はゆっくりと、尻尾を振った。子犬の頃みたいに、大きくは振れない。でも、確かに、振った。</p><p>男性は、もう一度笑った。</p><p>「いい子だ」</p><p>その日、俺は初めて、施設の外に出た。男性の車の後部座席に乗って、窓の外を見た。知らない景色が、ゆっくりと流れていく。</p><p>残りの時間が、どれくらいあるのかはわからない。男性も、俺も、もう若くはない。</p><p>でも、その時間を、一人で過ごさなくていい。</p><p>それだけで、十分だった。</p>",
+    "series": false
+  },
+  {
+    "id": 5,
+    "genre": "cry",
+    "genreLabel": "泣ける",
+    "title": "四十年前の不安",
+    "date": "2026年6月13日",
+    "excerpt": "実家の片付けで見つかった、亡き父の古い日記。そこに書かれていた「父になる前の不安」は、今、自分が抱えている気持ちと、そっくりだった。",
+    "body": "<p>実家の片付けは、思っていたよりも時間がかかった。</p><p>父が亡くなって三ヶ月。母は施設に入ることになり、この家は売ることになった。週末ごとに通って、少しずつ荷物を整理している。</p><p>今日は、父の書斎だった。</p><p>書斎には、本棚が三つ。父は本好きで、小説から専門書まで、いろんな本が詰め込まれていた。一冊一冊、捨てるか取っておくか、確認しながら箱に入れていく。地味で、終わりの見えない作業だった。</p><p>本棚の一番上、奥の方に、古いノートが何冊か挟まっていた。</p><p>手に取ってみると、表紙に日付が書かれている。1985年。父が二十代後半の頃だ。私が生まれる、少し前。</p><p>ページをめくると、父の字だった。今より、少し丸い字。</p><p>「日記、だったのか」</p><p>最初は、仕事のことが書かれていた。父は当時、まだ駆け出しの会社員で、仕事に苦労していたらしい。上司に怒られたこと、同期に先を越されたこと。今まで知らなかった父の姿が、そこにあった。</p><p>ページが進むと、文章の雰囲気が変わってきた。</p><p>『今日、妻から妊娠したと聞いた』</p><p>その日の日記は、いつもより長かった。</p><p>『嬉しい。でも、正直に言うと、怖い。自分に、父親なんてできるんだろうか。自分の父親のことを思い出す。あの人は、いつも自信を持って、何でも知っているように見えた。自分は、あんな風になれるんだろうか』</p><p>私は、ページをめくる手を止めた。</p><p>『仕事もうまくいっていない。お金のことも、不安だ。こんな状態で、子供を育てられるんだろうか。もし、自分が間違ったことを教えてしまったら。もし、子供が困っている時に、何もしてあげられなかったら』</p><p>日記は、その後も続いていた。</p><p>『今日、健診に一緒に行った。エコー写真を見た。まだ何だかよくわからない、小さな影だった。でも、それが自分の子供だと思うと、不思議な気持ちになった』</p><p>『不安はまだある。でも、今日思ったのは——完璧な父親になれなくてもいい。ただ、この子が困った時に、隣にいてやれる人間になりたい。それだけは、絶対に』</p><p>私は、しばらくその文章を見ていた。</p><p>父は、いつも自信を持っているように見えた人だった。仕事のことで悩んでいる姿も、不安を口にする姿も、一度も見たことがなかった。</p><p>でも、四十年前のこのノートの中には、不安だらけの、まだ「父親」になる前の、一人の男性がいた。</p><p>私は今、四十二歳。去年、息子が生まれた。</p><p>最近、よく考えていることがある。仕事と育児のバランス、将来のお金のこと、自分が子供にとって「いい親」になれているのかどうか。夜中に息子が泣いている時、何もできずに、ただ抱いていることしかできない自分に、情けなくなることもある。</p><p>完璧な父親になれなくてもいい。ただ、この子が困った時に、隣にいてやれる人間になりたい。</p><p>それは、まさに、今の自分が思っていることと、同じだった。</p><p>四十年前、まだ私が生まれる前に、父も同じことを考えていた。同じように不安で、同じように、何かを誓っていた。</p><p>私は、そのことを、今日まで知らなかった。</p><p>ノートをそっと閉じて、箱には入れずに、自分のバッグにしまった。これは、捨てるものじゃない。</p><p>窓の外を見ると、夕方の光が部屋に入ってきていた。父がこの部屋で、このノートを書いていた頃と、同じ角度の光なのかもしれない。</p><p>帰ったら、息子に何か話そう、と思った。何を話すかは、まだ決めていない。ただ、今日見つけたものを、いつか伝えられたらいいと思った。</p><p>不安を抱えながらも、誰かのために何かを誓った人がいたこと。そして、その誓いは、何十年経っても、ちゃんと続いているということを。</p>",
+    "series": false
+  },
+  {
+    "id": 6,
+    "genre": "fantasy",
+    "genreLabel": "ファンタジー",
+    "title": "シミの記憶",
+    "date": "2026年6月13日",
+    "excerpt": "服に残ったシミには、言えなかった想いが見える――クリーニング店の店主が、ある形見のコートと向き合う、ささやかな選択の物語。",
+    "body": "<p>商店街の外れに、小さなクリーニング店がある。</p><p>看板には「クリーニング 月見」と書かれている。店主は六十代くらいの女性で、いつも丁寧に、預かった服にアイロンをかけている。</p><p>この店には、誰も知らない秘密がある。</p><p>月見さんには、服に残った「シミ」を見ることができる。普通のシミじゃない。それは、その服を着ていた人が、言えなかった言葉や、抱えたままの後悔が、目に見える形になったものだ。</p><p>たとえば、若い女性が持ち込んだ白いブラウス。襟元に、ぼんやりと青いシミがある。普通の人には、ただの汚れにしか見えない。でも月見さんには、そのシミが何かわかる。</p><p>「好きだと言えなかった」気持ちだ。</p><p>月見さんは、それを落とすことができる。特別な水と、特別な手順で。シミは消える。服は綺麗になる。</p><p>ただし——シミを落とすと、その後悔も、その人の中から、少しだけ消える。</p><p>最初の頃、月見さんはそれを知らずに、普通にシミを落としていた。ある日、常連の老人が「最近、なんだか昔のことを思い出さなくなった」と言ったのを聞いて、初めて気づいた。</p><p>それ以来、月見さんは選ぶようになった。落としていいシミと、落としてはいけないシミを。</p><p>ある日、一人の男性が店に来た。</p><p>四十代くらい。手には、古いコートを持っていた。</p><p>「これ、クリーニングお願いできますか。父の形見なんです」</p><p>月見さんはコートを受け取った。一目見て、わかった。</p><p>コートの内側、胸のあたりに、大きな灰色のシミがある。今まで見た中でも、一番濃いシミだった。</p><p>「お父様の、ですか」</p><p>「はい。三ヶ月前に亡くなりました。このコート、よく着ていたので、形見として残しておこうと思って」</p><p>月見さんは、コートを丁寧に広げた。灰色のシミから、何かが伝わってくる。</p><p>——伝えられなかった、何か。</p><p>「少しお時間をいただいてもいいですか」と月見さんは言った。「丁寧に見させていただきたくて」</p><p>「もちろん、お願いします」</p><p>男性が帰った後、月見さんはコートを作業台に置いた。シミに、そっと手を当てる。</p><p>伝わってくるのは、ある記憶だった。</p><p>男性が、まだ子供の頃。父親と、何かのことで喧嘩をした。それ以来、二人の関係はぎこちなくなった。父親は、何度も「あの時、ああ言えばよかった」と思いながら、結局、最後まで言えなかった。</p><p>「すまなかった」という、たった一言を。</p><p>月見さんは、シミを見つめた。</p><p>これを落とせば、コートは綺麗になる。形見として、綺麗な状態で残せる。</p><p>でも——</p><p>月見さんは、シミを落とさなかった。</p><p>代わりに、コートを丁寧にブラッシングし、軽く洗って、シミの部分はそのままに、丁寧にプレスをかけた。シミは目立たなくなったけれど、消えてはいない。</p><p>数日後、男性が取りに来た。</p><p>「ありがとうございます。綺麗になりました」</p><p>男性はコートを手に取り、内側を見た。少し首をかしげた。</p><p>「ここ、シミが残ってますね。すみません、もう一度お願いできますか」</p><p>「それは」と月見さんは言った。「もしよろしければ、そのままにしておいてもらえますか」</p><p>「え?」</p><p>「お父様が、よく袖を通されていた場所だと思います。そこだけ、少し色が変わっているんです。長年、着ていらっしゃった証だと思います」</p><p>男性は、シミの部分を見つめた。</p><p>しばらく黒目を動かしてから、男性は静かに言った。</p><p>「父は、よくこのコートのポケットに手を入れて、考え込んでいました。何を考えてたんでしょうね」</p><p>「ご家族のこと、かもしれませんね」</p><p>男性は、コートを抱きしめた。</p><p>「不思議です。このシミ、なんだか——温かい気がします」</p><p>月見さんは微笑んだ。「そうかもしれませんね」</p><p>男性は、コートを大切に抱えて、店を出て行った。</p><p>月見さんは、その後ろ姿を見送った。</p><p>シミは消えなかった。男性の父親が抱えていた後悔も、消えなかった。</p><p>でも、それは、男性の中に、何かを残したのかもしれない。</p><p>月見さんは、次の服を手に取った。今日も、いくつかのシミと向き合う一日が始まる。</p><p>落とすべきものと、残すべきもの。</p><p>その違いを、月見さんは、いつも丁寧に見極めている。</p>",
+    "series": false
+  }
+];
+
+let currentFilter = 'all';
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const filtered = currentFilter === 'all' ? novels : novels.filter(n => n.genre === currentFilter);
+  grid.innerHTML = filtered.map(n => `
+    <div class="novel-card" onclick="openModal(${n.id})">
+      <div class="novel-genre">${n.genreLabel}</div>
+      <div class="novel-title">${n.title}</div>
+      <div class="novel-excerpt">${n.excerpt}</div>
+      <div class="novel-meta">
+        <span>${n.date}</span>
+        <span>読む →</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterNovels(genre, btn) {
+  currentFilter = genre;
+  document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function openModal(id) {
+  const n = novels.find(x => x.id === id);
+  document.getElementById('m-genre').textContent = n.genreLabel;
+  document.getElementById('m-title').textContent = n.title;
+  document.getElementById('m-date').textContent = n.date;
+  document.getElementById('m-body').innerHTML = n.body;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.querySelector('.modal').scrollTop = 0;
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+renderGrid();
+</script>
+</body>
+</html>

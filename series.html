@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>連載小説 - 月の本棚</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #f0e6c8;
+    --bg: #0f1626;
+    --bg2: #1b2440;
+    --accent: #f0c674;
+    --accent2: #d4a548;
+    --muted: #9aa3c4;
+    --border: rgba(240,198,116,0.22);
+    --card-bg: rgba(255,255,255,0.04);
+  }
+
+  body {
+    background: linear-gradient(160deg, var(--bg2) 0%, var(--bg) 100%);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2rem 1.2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    position: sticky;
+    top: 0;
+    background: var(--bg2);
+    z-index: 100;
+    flex-wrap: wrap;
+  }
+
+  .site-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .site-subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.05);
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+  }
+
+  nav {
+    margin-left: auto;
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  nav a {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav a:hover, nav a.active { color: var(--accent); }
+
+  .hero {
+    padding: 4rem 2rem 3rem;
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: var(--bg2);
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    margin-bottom: 1rem;
+    color: #fdf6e3;
+  }
+
+  .hero h1 .accent {
+    color: var(--accent);
+  }
+
+  .hero-desc {
+    font-size: 0.95rem;
+    color: var(--muted);
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  /* ── セクション切り替えUI ── */
+  .section-switch {
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+    padding: 0 2rem;
+    display: flex;
+    gap: 1rem;
+  }
+
+  .switch-card {
+    flex: 1;
+    display: block;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    background: rgba(255,255,255,0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+    color: var(--ink);
+  }
+
+  .switch-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(240,198,116,0.15);
+  }
+
+  .switch-card.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg2);
+    border-color: transparent;
+  }
+
+  .switch-card .icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .switch-card .label {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .switch-card .count {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    margin-top: 0.3rem;
+    opacity: 0.8;
+  }
+
+  .switch-card.active .count { color: var(--bg2); }
+  .switch-card:not(.active) .count { color: var(--muted); }
+
+  .ad-slot {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .ad-slot .ad-box {
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-align: center;
+    padding: 0.8rem;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.02);
+    border-radius: 4px;
+  }
+
+  .series-grid {
+    max-width: 960px;
+    margin: 2.5rem auto 0;
+    padding: 0 2rem 3rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.6rem;
+  }
+
+  .series-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.8rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .series-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .series-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(240, 198, 116, 0.12);
+    border-color: rgba(240,198,116,0.4);
+  }
+
+  .series-card:hover::before { opacity: 1; }
+
+  .series-tags {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .series-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    padding: 0.25rem 0.7rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  .series-tag.genre {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg2);
+  }
+
+  .series-tag.status {
+    background: rgba(255,255,255,0.04);
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+
+  .series-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+    color: #fdf6e3;
+  }
+
+  .series-excerpt {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.85;
+    margin-bottom: 1.2rem;
+  }
+
+  .series-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+
+  .series-meta .read-btn {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5,8,18,0.75);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: linear-gradient(160deg, var(--bg2) 0%, var(--bg) 100%);
+    max-width: 700px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 3rem;
+    position: relative;
+    border-radius: 8px;
+    border-top: 3px solid var(--accent);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1.2rem; right: 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+
+  .modal-tags {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ── 話数タブ ── */
+  .episode-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .episode-tab {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .episode-tab:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .episode-tab.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg2);
+    border-color: transparent;
+  }
+
+  /* ── 次の話へボタン ── */
+  .next-episode-btn {
+    display: block;
+    width: 100%;
+    margin-top: 2rem;
+    padding: 1rem;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .next-episode-btn:hover {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg2);
+    border-color: transparent;
+  }
+
+  .next-episode-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .modal-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    color: #fdf6e3;
+  }
+
+  .modal-date {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-body {
+    font-size: 0.95rem;
+    line-height: 2.1;
+    color: var(--ink);
+  }
+
+  .modal-body p { margin-bottom: 1.4em; }
+
+  .modal-ad {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .cta-box {
+    margin-top: 1.5rem;
+    padding: 1.4rem;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+
+  .cta-box a {
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .next-ep-note {
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-align: center;
+    font-weight: 700;
+  }
+
+  footer {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="site-title">月の本棚</a>
+  <div class="site-subtitle">連載小説</div>
+  <nav>
+    <a href="#">about</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <span class="hero-eyebrow">Series Novels</span>
+  <h1>続きが気になる、<br><span class="accent">連載中の物語たち</span>。</h1>
+  <p class="hero-desc">異世界・学園ファンタジー系の連載小説をまとめた棚です。第1話から、少しずつ更新していきます。</p>
+</section>
+
+<div class="section-switch">
+  <a href="index.html" class="switch-card">
+    <div class="icon">📖</div>
+    <div class="label">短編・読みもの</div>
+    <div class="count">6作品</div>
+  </a>
+  <a href="series.html" class="switch-card active">
+    <div class="icon">📚</div>
+    <div class="label">連載小説</div>
+    <div class="count">4作品</div>
+  </a>
+</div>
+
+<div class="ad-slot"><div class="ad-box">広告スペース（728×90）</div></div>
+
+<div class="series-grid" id="grid"></div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-tags" id="m-tags"></div>
+    <div class="episode-tabs" id="m-episode-tabs"></div>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-date" id="m-date"></div>
+    <div class="modal-body" id="m-body"></div>
+    <div id="m-next-btn"></div>
+    <div class="modal-ad">
+      <div class="ad-box">広告スペース（記事内インアーティクル広告）</div>
+      <div class="cta-box">
+        続きを早く読みたい方へ ―― <a href="#">AIクリエイターズ 公式note</a> で先行話を配信中です。
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>© AIクリエイターズ · 月の本棚</footer>
+
+<script>
+const novels = [
+  {
+    "id": 7,
+    "genre": "long",
+    "genreLabel": "長編",
+    "title": "鑑定だけのおっさん",
+    "date": "2026年6月14日",
+    "excerpt": "残業中に死んだ会社員が転移した先で与えられたのは、戦闘に使えない「鑑定」スキルだけ。それでも見続けた先に、誰も気づかなかった力が見えてくる。",
+    "body": "<p>残業中に、トラックに轢かれて死んだ。</p><p>そういう実感が、薄れた頭の中にあった。三十六歳、独身。会社員。最後に見たのは、コンビニの前の信号と、スマホの画面に表示された「明日の会議資料」だった。</p><p>目を覚ますと、見知らぬ天井があった。</p><p>「お、目が覚めたか」</p><p>白いひげの老人が、ベッドの脇に立っていた。優しそうな顔をしているが、雰囲気からして、ただの老人ではない気がした。</p><p>「お前さん、こことは違う世界から来たんじゃ。死んだあと、わしがこの世界に呼んだ」</p><p>老人は神様らしい。話によると、俺は「異世界転移者」というやつになったらしい。よくある話だ、と思った。スマホで見たラノベの設定そのままだった。</p><p>「特別な力を、一つ授けよう」</p><p>神様はそう言うと、俺の体に何か光のようなものを当てた。</p><p>「お前さんに与えるのは——『鑑定』のスキルじゃ」</p><p>「鑑定?」</p><p>「ものを見るだけで、その情報がわかるスキルじゃ。便利じゃろう?」</p><p>正直、ピンとこなかった。剣も魔法も使えず、ただ「見る」だけ。それが俺に与えられた、たった一つの力だった。</p><p>「頑張るんじゃぞ」</p><p>神様はそう言って、姿を消した。</p><p>俺の名前は、田中誠一。今は、この異世界で「セイ」と呼ばれている。</p><p>***</p><p>異世界に来てから、半年が経った。</p><p>最初は何もできなかった。剣を握っても素人同然。魔法も使えない。唯一使えるのが「鑑定」スキルだけ。</p><p>『鑑定:このリンゴは、普通のリンゴ。鮮度は良好』</p><p>そんな情報が、見るだけでわかる。最初は便利だと思ったが、すぐに気づいた。みんな、もっとすごい能力を持っている。剣の達人、強力な魔法使い、回復魔法の使い手。それに比べたら、「物の情報がわかる」だけの俺は、完全に「使えない」枠だった。</p><p>冒険者ギルドに登録した時も、受付の女性に微妙な顔をされた。</p><p>「鑑定スキルだけ……ですか」</p><p>「はい」</p><p>「うーん。正直に言うと、戦闘には向かないですね。荷物運びとか、雑用ならパーティに入れてもらえるかもしれませんが」</p><p>それでも、俺は冒険者として登録した。他にやることもなかったし、この世界で生きていくには、何かしないといけない。</p><p>最初の数ヶ月は、本当に雑用係だった。荷物持ち。野営の見張り。誰もやりたがらない仕事ばかり。</p><p>でも、俺は一つだけ、コツコツ続けていたことがあった。</p><p>暇な時間、ずっと「鑑定」を使っていた。</p><p>草、石、虫、水、武器、防具。見えるもの全部に鑑定をかけた。最初は「リンゴは普通のリンゴ」程度の情報しか出てこなかったが、続けるうちに、鑑定の精度が上がっていくのがわかった。</p><p>『鑑定:このキノコは「マダラダケ」。見た目は食用キノコと似ているが、毒性がある。摂取すると数時間後に腹痛と発熱』</p><p>これは、図鑑にも載っていない情報だった。</p><p>ある日、俺が所属していた臨時パーティが、森の中で野営をしていた。リーダーの剣士が、近くで採ってきたキノコを鍋に入れようとしていた。</p><p>「あ、それ」</p><p>「ん?」</p><p>「マダラダケです。毒があります」</p><p>リーダーは半信半疑だったが、別の魔法使いが鑑定魔法を使って確認した。本当に毒キノコだった。</p><p>「お前、鑑定スキルだったよな。すごいじゃないか」</p><p>その日から、少しだけ、扱いが変わった。</p><p>***</p><p>今日も、俺は森の入り口で、パーティの仲間を待っていた。今回のパーティは、Cランクの依頼——森の奥にある遺跡の調査だ。</p><p>「セイ、準備できたか?」</p><p>パーティリーダーのアレンが声をかけてきた。剣士で、年齢は俺より少し若い。最初は俺のことを「お荷物」扱いしていたが、最近は少し違う。</p><p>「大丈夫です」</p><p>俺たちは、森の奥へと進んでいった。</p><p>遺跡の入り口に着いたとき、俺は何気なく、入り口の石壁に鑑定をかけた。</p><p>『鑑定:この石壁には、古代の罠が仕込まれている。圧力感知式。一定の重さがかかると、上部から鋭い石柱が降ってくる』</p><p>「待ってください」</p><p>「どうした?」</p><p>「この入り口、罠があります。重さで作動するタイプの」</p><p>アレンは少し驚いた顔をした。</p><p>「鑑定で、罠もわかるのか?」</p><p>「はい。最近、わかるようになってきました」</p><p>パーティの全員が、俺を見た。</p><p>「……お前、本当に『鑑定だけ』なのか?」</p><p>俺は、少し考えてから答えた。</p><p>「鑑定だけです。でも、見えるものは、増えてきました」</p><p>アレンは少し笑った。</p><p>「お前、思ったより、すごいやつなんじゃないか」</p><p>俺は、何も言わなかった。ただ、内心、少しだけ嬉しかった。</p><p>半年前、神様から「鑑定スキル」を渡された時、正直、これで何ができるんだろうと思っていた。剣も魔法も使えない。戦闘では役に立たない。</p><p>でも——「見る」ことだけは、誰にも負けないくらい、ずっと続けてきた。</p><p>俺たちは、罠を避けて、遺跡の中へと進んでいった。</p><p>この先に何があるのか、俺にはまだわからない。でも、何が起きても——俺には、見るべきものを見る力がある。</p><p>それだけは、確かだった。</p><p>（第二話へ続く）</p>",
+    "series": true,
+    "series_id": 7,
+    "episode": 1
+  },
+  {
+    "id": 8,
+    "genre": "long",
+    "genreLabel": "長編",
+    "title": "薬草売りの娘",
+    "date": "2026年6月14日",
+    "excerpt": "薬草売りで生きる十六歳の少女には、見るだけで薬草の効能がわかる「緑の眼」があった。旅人との出会いが、彼女を村の外の世界へと導く。",
+    "body": "<p>リディアは、村の外れで薬草を売って暮らしている。</p><p>十六歳。特別な力は何もない。魔法も使えないし、剣も握ったことがない。両親はもういない。小さい頃に流行病で亡くなった。それからは、山に入って薬草を採り、村の市場で売る生活をしている。</p><p>「リディア、今日の分はあるかい?」</p><p>市場の薬屋のおじさんが声をかけてくる。</p><p>「はい、これです」</p><p>リディアは籠から、採ってきた薬草を取り出した。傷薄草、熱冷まし草、それから——少し珍しい、月見草。</p><p>「月見草もあるのか。最近、見つけにくくなったのに」</p><p>「裏山の、いつもの場所にありました」</p><p>「相変わらず、いい場所を知ってるね」</p><p>薬屋のおじさんは、いつも少し多めにお金を払ってくれる。それでも、生活は楽じゃない。今日も、薬草を売ったお金で、パンと少しの野菜を買って、家に帰る。</p><p>リディアの家は、村の一番外れにある、小さな小屋だ。両親が残してくれたもの。雨が降ると少し雨漏りするけど、それ以外は問題ない。</p><p>夜、リディアは家の中で、ランプの灯りで本を読んでいた。村の図書館——といっても、本が十冊くらいしかない小さな部屋だけど——から借りてきた、薬草図鑑だ。</p><p>リディアには、一つだけ、不思議なことがある。</p><p>薬草を見ると、その薬草が「何に効くか」が、なんとなくわかる。普通の人は、図鑑を見ないとわからないことを、リディアは見るだけでわかる。</p><p>最初は、それが特別なことだとは思っていなかった。「目がいいから」だと思っていた。でも、最近、少し違うのかもしれないと思うようになった。</p><p>ある日、村に旅人が来た。</p><p>ローブを着た、年配の女性。村の宿に泊まっているらしい。リディアは市場で、その旅人とすれ違った。</p><p>「あら」</p><p>旅人は、リディアを見て、足を止めた。</p><p>「あなた、何か持ってるわね」</p><p>「え?」</p><p>「その籠の中の薬草。あなたが採ったの?」</p><p>「はい」</p><p>旅人は、籠の中を覗き込んだ。</p><p>「月見草、傷薄草……これ、全部、一番状態がいい時期に採られてるわね。それに——」</p><p>旅人は、リディアの顔をじっと見た。</p><p>「あなた、薬草を見ただけで、効能がわかるんじゃない?」</p><p>リディアは、驚いた。</p><p>「……はい。でも、それって、普通のことじゃないんですか?」</p><p>旅人は、少し笑った。</p><p>「いいえ。それは『緑の眼』と呼ばれる、特別な力よ。何百年かに一人くらいしか現れない」</p><p>「緑の、眼?」</p><p>「植物の本質を見抜く力。昔は、宮廷の薬師や、大きな魔法学院で、その力を持つ人が重宝されていたの」</p><p>リディアは、何を言われているのか、よくわからなかった。</p><p>「私は、リディアです。薬草売りです」</p><p>「リディア。私はマルタ。元々は、王都の魔法学院で薬学を教えていたの」</p><p>マルタは、リディアの籠を、もう一度見た。</p><p>「もしよかったら、少し話を聞かせてもらえない?あなたの力について」</p><p>***</p><p>その日の夜、リディアはマルタと、村の宿の近くで話をした。</p><p>「あなたの力は、ちゃんと育てれば、すごいものになるわ」とマルタは言った。「薬を作る能力、毒を見抜く能力、それから——人や動物の体の状態を、見るだけでわかる能力にもつながる」</p><p>「私に、そんなことができるんですか?」</p><p>「できるわよ。ただ、今のままじゃ、力が眠ったままになる」</p><p>リディアは、薬草籠を見た。これまで、ただの「目がいいだけ」だと思っていた。村で薬草を売って、なんとか生きていく。それが、これからもずっと続く生活だと思っていた。</p><p>「あなた、王都に来る気はある?」</p><p>「王都……」</p><p>リディアは、村から出たことがなかった。両親が亡くなってから、ずっとこの村で過ごしてきた。</p><p>「私の力で、あなたを魔法学院に推薦できる。もちろん、大変なことも多いと思う。でも、あなたの『緑の眼』は、もっと多くの人を助けられる力よ」</p><p>リディアは、しばらく黙っていた。</p><p>窓の外を見ると、夜空に月が出ていた。月見草の名前の由来になった、その月。</p><p>両親が亡くなった後、リディアはずっと「生きていくため」に薬草を採ってきた。それ以外のことを、考える余裕はなかった。</p><p>「……行ってみたいです」</p><p>リディアは、静かにそう言った。</p><p>「自分の力が、誰かの役に立つなら」</p><p>マルタは、微笑んだ。</p><p>「いい返事ね。準備に少し時間がかかるけど、王都までの旅、一緒に行きましょう」</p><p>数日後、リディアは小さな荷物をまとめて、村を出発した。</p><p>村の人たちが、見送りに来てくれた。薬屋のおじさんが、「元気でな」と言って、餞別にお金を持たせてくれた。</p><p>リディアは、村の入り口で一度だけ振り返った。これまで暮らしてきた村、両親が眠る場所。</p><p>それから、前を向いた。</p><p>王都までは、馬車で五日かかるという。リディアにとって、初めての長い旅。そして、初めて知る、自分の力の意味。</p><p>何が待っているのか、まだわからない。でも、薬草の効能を見るように——リディアは、自分の未来を、少しだけ、明るく感じていた。</p><p>（第二話へ続く）</p>",
+    "series": true,
+    "series_id": 8,
+    "episode": 1
+  },
+  {
+    "id": 9,
+    "genre": "long",
+    "genreLabel": "長編",
+    "title": "火が出ない火属性",
+    "date": "2026年6月15日",
+    "excerpt": "名門魔法使いの家に生まれたのに、火属性適性レベル2。誰もが見放した少年が、たった一人の師との出会いで見つけた、自分だけの火。",
+    "body": "<p>王立魔法学院、入学初日。</p><p>ノエル・ヴァンディエールは、大講堂の中央に立っていた。周りには、同じく入学した新入生たちが並んでいる。</p><p>「では、適性検査を始めます。前に出て、この水晶に手を当ててください」</p><p>教師の指示で、新入生たちが一人ずつ前に出る。水晶に手を当てると、その人の魔法属性と適性レベルが、光の色と強さで表示される仕組みだ。</p><p>「火属性、適性レベル8」</p><p>「水属性、適性レベル6」</p><p>次々と、結果が発表されていく。レベル5以上あれば、優秀とされる。</p><p>「次、ノエル・ヴァンディエール」</p><p>ノエルは前に出て、水晶に手を当てた。</p><p>水晶が、ゆっくりと赤く光った。</p><p>「火属性、適性レベル……2」</p><p>講堂が、少しざわついた。</p><p>ノエル・ヴァンディエールという名前は、この国では誰でも知っている。ヴァンディエール家は、代々優秀な魔法使いを輩出してきた、名門貴族。ノエルの父親は、国でも有数の火属性魔法使いで、適性レベルは9だった。</p><p>その息子が、レベル2。</p><p>「あの、もう一度測定してもらえますか」</p><p>ノエルは、もう一度、水晶に手を当てた。</p><p>結果は、同じだった。レベル2。</p><p>周りの新入生たちが、小さく笑ったり、ささやき合ったりしているのが聞こえる。「ヴァンディエール家の息子が、レベル2?」「火が出ないってことじゃないか」。</p><p>ノエルは、何も言わず、列に戻った。</p><p>***</p><p>入学してから一ヶ月。</p><p>ノエルは、毎日、魔法実技の授業で苦労していた。</p><p>火属性の基本魔法は「火球」。手のひらに火の球を作り、飛ばす魔法だ。クラスメイトたちは、最初の授業で、すでに小さな火球を作れるようになっていた。</p><p>ノエルは、できなかった。</p><p>手のひらに集中して、魔力を込める。本来なら、そこに小さな火の粒が現れるはずだ。でも、ノエルの手には、何も現れない。せいぜい、わずかな熱が手のひらに感じられるだけだ。</p><p>「ヴァンディエール、また失敗か」</p><p>クラスメイトの一人が、笑いながら言った。ノエルと同じ貴族出身の少年で、適性レベルは7だった。</p><p>「お前の親父、国一番の火魔法使いなんだろ?血筋って、当てにならないもんだな」</p><p>ノエルは、何も言い返さなかった。言い返したところで、結果は変わらない。</p><p>放課後、ノエルは一人で、訓練場の隅にいた。何度も、手のひらに魔力を込める練習をしていた。</p><p>「お前、まだ練習してるのか」</p><p>声をかけられて、ノエルは振り返った。訓練場の管理をしている、老齢の魔法使いだった。名前は、ガレン。元は、軍で魔法部隊を指導していたという話だが、今は学院の雑用のような仕事をしている。普段は、生徒たちにあまり関わらない。</p><p>「適性レベル2なんだろう?」とガレンは言った。「それ、知ってる」</p><p>「……はい」</p><p>「お前、それでも続けるのか」</p><p>ノエルは、少し考えてから答えた。</p><p>「他に、できることがないので」</p><p>ガレンは、ノエルの手元を見た。</p><p>「ちょっと、その火球を出してみろ」</p><p>ノエルは、もう一度、手のひらに魔力を集中させた。わずかな熱が生まれる。それだけだった。</p><p>「……うん、わかった」とガレンは言った。「お前の魔力、見せてもらっていいか?」</p><p>ガレンは、ノエルの手を取り、自分の魔力を流し込んだ。何かを確認しているような様子だった。</p><p>「お前さ」とガレンは言った。「適性レベルって、何のことかわかってるか?」</p><p>「魔法の、強さの基準ですよね」</p><p>「半分正解だ。適性レベルは『どれだけ早く、大きな魔力を出せるか』を測るものだ。お前は、それが低い」</p><p>「だから、レベル2なんですよね」</p><p>「ただな」とガレンは続けた。「お前の魔力、量自体は普通だ。出すスピードが、極端に遅いだけだ」</p><p>ノエルは、ガレンを見た。</p><p>「遅い、だけ……?」</p><p>「お前、火球出そうとして、何秒くらい集中してる?」</p><p>「数秒、くらいです」</p><p>「もう一回、やってみろ。今度は、一分くらい、集中を続けてみろ」</p><p>ノエルは、半信半疑だったが、もう一度、手のひらに魔力を集中させた。一秒、二秒……いつもなら、ここで諦めていた。でも、今日は続けた。</p><p>十秒、二十秒、三十秒——</p><p>手のひらに、小さな、赤い光が生まれた。</p><p>米粒くらいの大きさの、小さな火の粒。それでも、確かに「火」だった。</p><p>「……できた」</p><p>ノエルは、自分の手のひらを見つめた。生まれて初めて、火属性の魔法が、形になった瞬間だった。</p><p>「な?」とガレンは言った。「お前は、遅いだけだ。遅いってことは——他のやつより、何倍も時間をかけて、何倍も練習すれば、同じところに行ける、ってことだ」</p><p>「でも、戦闘では、一瞬で魔法を出さないと……」</p><p>「ああ、戦闘向きじゃない。それは事実だ」とガレンは、はっきり言った。「でも、戦闘以外にも、魔法の使い道はいくらでもある。研究、製作、儀式魔法……時間をかけて、丁寧に魔力を扱う仕事は、たくさんある」</p><p>ノエルは、手のひらの小さな火を見つめた。米粒くらいの光は、まだ消えずに、そこにあった。</p><p>「俺に、教えてもらえますか」</p><p>ガレンは、少し笑った。</p><p>「俺は、お前の親父みたいに、すごい魔法使いじゃない。教えられるのは、地味なことばかりだ」</p><p>「それでいいです」</p><p>ノエルは、もう一度、火を見た。小さくても、自分で生み出した、初めての火だった。</p><p>「俺は、これで、何かになりたいです」</p><p>ガレンは、ノエルの肩に手を置いた。</p><p>「じゃあ、明日から、ちょっとずつな」</p><p>訓練場に、夕日が差し込んでいた。米粒くらいの火は、まだノエルの手のひらの上で、小さく揺れていた。</p><p>（第二話へ続く）</p>",
+    "series": true,
+    "series_id": 9,
+    "episode": 1
+  },
+  {
+    "id": 10,
+    "genre": "long",
+    "genreLabel": "長編",
+    "title": "特別観察クラスへ、ようこそ",
+    "date": "2026年6月16日",
+    "excerpt": "クラス分けのミスで配属された「特別観察クラス」。そこに集まるのは、地味すぎる異能を持つ生徒たちばかり。何も持たない俺が、なぜかこのクラスで必要とされる――。",
+    "body": "<p>入学式の翌日、俺は職員室に呼び出された。</p><p>「君、クラス分けに間違いがあったみたいでね」</p><p>担任になるはずだった先生が、申し訳なさそうに言った。</p><p>「君は、1年A組じゃなくて、1年Z組になります」</p><p>「Z組?」</p><p>俺の高校に、Z組なんてクラスがあるなんて、聞いたことがなかった。</p><p>「ああ、説明が難しいんだけど……『特別観察クラス』っていう、ちょっと特殊なクラスでね。普通の授業もあるんだけど、定員が少なくて、いろいろ特別なことをやるクラスなんだ」</p><p>「俺、何か特別なことしましたか?」</p><p>「いや、たぶん、事務的なミスだと思う。本来、Z組には入らないはずなんだけど……まあ、もう手続きが終わっちゃって。今学期は、Z組でお願いできるかな」</p><p>俺の名前は、佐伯ハルト。ごく普通の高校一年生だ。成績も普通、運動も普通、特に目立つこともない。なぜ自分が「特別」なクラスに入ることになったのか、全くわからなかった。</p><p>Z組の教室は、校舎の一番奥、三階の端にあった。ドアを開けると、教室には、五人の生徒がいた。</p><p>「あ、新しい人だ」</p><p>最初に声をかけてきたのは、眼鏡をかけた女子生徒だった。</p><p>「えっと、佐伯ハルトです。よろしくお願いします」</p><p>「私、相沢ミライ。よろしくね」</p><p>相沢さんは、にこにこしながら言った。</p><p>「ハルトくんって、何が\"見える\"の?」</p><p>「は?」</p><p>「異能。何が見えるの?何が聞こえるの?それとも、何か感じるタイプ?」</p><p>俺は、何を言われているのか、全くわからなかった。</p><p>「あの、異能って……?」</p><p>教室が、少し静かになった。</p><p>別の席にいた男子生徒——背の高い、無口そうな生徒が、こちらを見た。</p><p>「お前、何も持ってないのか?」</p><p>「持って……ない、と思います。普通の高校生ですけど」</p><p>相沢さんと、その男子生徒が、目を合わせた。</p><p>「えっと」と相沢さんが言った。「説明するね。このZ組は、『ちょっと特別な力を持ってる生徒』が集められるクラスなの」</p><p>「特別な力?」</p><p>「うん。たとえば——」</p><p>相沢さんは、窓の外を見た。</p><p>「私は、『三十分後の天気が、なんとなくわかる』の」</p><p>「三十分後の……天気?」</p><p>「うん。今から三十分後、ここに小雨が降るよ。傘、持ってきた方がいいかも」</p><p>俺は、窓の外を見た。今は、晴れている。雲もほとんどない。</p><p>「……すごい、ですね」</p><p>「でしょー!」</p><p>相沢さんは、嬉しそうに言った。</p><p>「でも、それだけなんだよね。三十分後の天気が、ちょっとわかるだけ。受験にも、勝負にも、全然役に立たない」</p><p>別の席から、もう一人の生徒が口を挟んだ。今度は、小柄な男子生徒だった。</p><p>「俺は、すれ違った人が『今、何の音楽を聴いてるか』が、なんとなくわかる」</p><p>「それは……」</p><p>「便利そうに聞こえるだろ?でも、本当に『なんとなく』なんだよ。曲名はわからない。ジャンルとか、テンポとか、その人が今、楽しい気分か、悲しい気分かが、なんとなくわかるだけ」</p><p>無口な男子生徒も、ぼそっと言った。</p><p>「俺は、明日、何時に雨が降るか、寝てる間に夢で見る」</p><p>「それも……すごそうですけど」</p><p>「当たる確率、六割くらいだ」</p><p>俺は、だんだん状況が見えてきた。</p><p>このZ組に集まっているのは、「ちょっとした不思議な力」を持っている生徒たち。でも、その力はどれも、ものすごく地味で、実用性が低い。戦ったり、勝負したりするには、全く使えない力ばかりだ。</p><p>「それで」と相沢さんが言った。「ハルトくんは、何も持ってないんだよね?」</p><p>「はい。普通です」</p><p>「じゃあ、なんでZ組に入ったんだろう……」</p><p>その時、教室のドアが開いた。</p><p>「失礼。担当の先生です」</p><p>入ってきたのは、若い女性の先生だった。</p><p>「あ、新入生も来てるね。佐伯ハルトくん、だね」</p><p>「はい」</p><p>先生は、出席簿を見ながら、少し首をかしげた。</p><p>「うーん、確かにミスかもしれないけど……一応、今学期はこのクラスでお願いします」</p><p>「あの、先生」と相沢さんが聞いた。「ハルトくん、何も持ってないみたいなんですけど」</p><p>「そうみたいだね」</p><p>先生は、特に驚いた様子もなく、続けた。</p><p>「でも、それも、悪くないかもよ」</p><p>「悪くない?」</p><p>「このクラスのみんなは、それぞれ、自分の力に、ちょっと振り回されてるところがあるからね」</p><p>先生は、教室を見渡した。</p><p>「相沢さんは、雨が降るのがわかるけど、いつも傘を二本持ち歩いてる。誰かに『傘いる?』って渡すために」</p><p>「うん、そうだけど……」</p><p>「音楽がわかる子は、人とすれ違うたびに、その人の気分が伝わってきて、ちょっと疲れちゃうことがある」</p><p>「それは、まあ……」</p><p>先生は、俺を見た。</p><p>「ハルトくんが、もし本当に『何も持ってない』なら——それは、このクラスの中で、結構、特別なことだと思うよ」</p><p>「俺が、特別……?」</p><p>「うん。みんなが『見えすぎる』『感じすぎる』クラスの中で、何も見えない、何も感じない人って、貴重なんじゃないかな」</p><p>俺は、よくわからなかった。ただ「普通」なだけなのに、それが「特別」だと言われている。</p><p>相沢さんが、俺の方を見て、にっこり笑った。</p><p>「じゃあ、ハルトくん。これから、よろしくね」</p><p>「あ、はい。よろしくお願いします」</p><p>教室の窓の外、空には、まだ雲は見えなかった。</p><p>三十分後——本当に、小雨が降り始めた。</p><p>俺は、傘を持っていなかった。</p><p>「ほら」と相沢さんが、二本目の傘を差し出した。「言ったでしょ」</p><p>俺は、その傘を受け取った。</p><p>なんだか、変な高校生活が始まりそうな気がした。</p><p>（第二話へ続く）</p>",
+    "series": true,
+    "series_id": 10,
+    "episode": 1
+  }
+];
+
+// シリーズごとにグループ化(series_idでまとめる)
+function getSeriesList() {
+  const map = {};
+  novels.forEach(n => {
+    if (!map[n.series_id]) map[n.series_id] = [];
+    map[n.series_id].push(n);
+  });
+  Object.values(map).forEach(eps => eps.sort((a, b) => a.episode - b.episode));
+  return map;
+}
+
+const seriesMap = getSeriesList();
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const seriesList = Object.values(seriesMap).map(eps => eps[0]);
+  grid.innerHTML = seriesList.map(n => {
+    const totalEpisodes = seriesMap[n.series_id].length;
+    return `
+    <div class="series-card" onclick="openModal(${n.series_id}, 1)">
+      <div class="series-tags">
+        <span class="series-tag genre">${n.genreLabel}</span>
+        <span class="series-tag status">連載中・全${totalEpisodes}話</span>
+      </div>
+      <div class="series-title">${n.title}</div>
+      <div class="series-excerpt">${n.excerpt}</div>
+      <div class="series-meta">
+        <span>${n.date}</span>
+        <span class="read-btn">第1話を読む →</span>
+      </div>
+    </div>
+  `;
+  }).join('');
+}
+
+function openModal(seriesId, episodeNum) {
+  const episodes = seriesMap[seriesId];
+  const n = episodes.find(e => e.episode === episodeNum);
+  if (!n) return;
+
+  document.getElementById('m-tags').innerHTML =
+    `<span class="series-tag genre">${n.genreLabel}</span><span class="series-tag status">第${n.episode}話</span>`;
+
+  const tabsHtml = episodes.map(e => `
+    <button class="episode-tab ${e.episode === episodeNum ? 'active' : ''}"
+            onclick="openModal(${seriesId}, ${e.episode})">
+      第${e.episode}話
+    </button>
+  `).join('');
+  document.getElementById('m-episode-tabs').innerHTML = tabsHtml;
+
+  document.getElementById('m-title').textContent = `${n.title}　第${n.episode}話`;
+  document.getElementById('m-date').textContent = n.date;
+  document.getElementById('m-body').innerHTML = n.body;
+
+  const nextEp = episodes.find(e => e.episode === episodeNum + 1);
+  const nextBtnDiv = document.getElementById('m-next-btn');
+  if (nextEp) {
+    nextBtnDiv.innerHTML = `<button class="next-episode-btn" onclick="openModal(${seriesId}, ${episodeNum + 1})">第${episodeNum + 1}話を読む →</button>`;
+  } else {
+    nextBtnDiv.innerHTML = `<div class="next-episode-btn disabled">次の話は近日公開です</div>`;
+  }
+
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.querySelector('.modal').scrollTop = 0;
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+renderGrid();
+</script>
+</body>
+</html>
